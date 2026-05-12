@@ -1,17 +1,17 @@
-﻿--- Test: Admin access Raw PII ---
+--- Test: Admin access Raw PII ---
 Path: /api/patients/raw | Role: alice
 Status: 200 (Expected: 200)
 Data Sample (First 1 Record): {
   "patient_id": "bdd640fb-0667-4ad1-9c80-317fa3b1799d",
-  "ho_ten": "Quang Phß║ím",
+  "ho_ten": "Quang Phạm",
   "cccd": 95304702823,
   "ngay_sinh": "08/05/1954",
   "so_dien_thoai": 700539322,
   "email": "maijohn@example.net",
-  "dia_chi": "338 John Sß╗æ\nThß╗ï x├ú JaneTh├ánh phß╗æ, 895667",
-  "benh": "Tim mß║ích",
+  "dia_chi": "338 John Số\nThị xã JaneThành phố, 895667",
+  "benh": "Tim mạch",
   "ket_qua_xet_nghiem": 11.35,
-  "bac_si_phu_trach": "Qu├╜ c├┤ Th├ánh V┼⌐",
+  "bac_si_phu_trach": "Quý cô Thành Vũ",
   "ngay_kham": "31/01/2026"
 }
 ------------------------------
@@ -24,15 +24,15 @@ Path: /api/patients/anonymized | Role: bob
 Status: 200 (Expected: 200)
 Data Sample (First 1 Record): {
   "patient_id": "bdd640fb-0667-4ad1-9c80-317fa3b1799d",
-  "ho_ten": "Quang Phß║ím",
-  "cccd": "048251705551",
+  "ho_ten": "Quang Phạm",
+  "cccd": "094908935633",
   "ngay_sinh": "08/05/1954",
-  "so_dien_thoai": "0332704811",
-  "email": "janedang@example.com",
-  "dia_chi": "338 John Sß╗æ\nThß╗ï x├ú JaneTh├ánh phß╗æ, 895667",
-  "benh": "Tim mß║ích",
+  "so_dien_thoai": "0372945178",
+  "email": "pmai@example.net",
+  "dia_chi": "338 John Số\nThị xã JaneThành phố, 895667",
+  "benh": "Tim mạch",
   "ket_qua_xet_nghiem": 11.35,
-  "bac_si_phu_trach": "Qu├╜ c├┤ Th├ánh V┼⌐",
+  "bac_si_phu_trach": "Quý cô Thành Vũ",
   "ngay_kham": "31/01/2026"
 }
 ------------------------------
@@ -42,10 +42,10 @@ Status: 200 (Expected: 200)
 Response: {
   "total_patients": 200,
   "disease_distribution": {
-    "Huyß║┐t ├íp cao": 54,
-    "Khß╗Åe mß║ính": 47,
-    "Tim mß║ích": 46,
-    "Tiß╗âu ─æ╞░ß╗¥ng": 53
+    "Huyết áp cao": 54,
+    "Khỏe mạnh": 47,
+    "Tim mạch": 46,
+    "Tiểu đường": 53
   },
   "avg_test_result": 7.64
 }

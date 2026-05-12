@@ -6,4 +6,3 @@ venv/
 vi_model/
 medviet-governance/data/raw/
 medviet-governance/data/*.csv
-medviet-governance/reports/

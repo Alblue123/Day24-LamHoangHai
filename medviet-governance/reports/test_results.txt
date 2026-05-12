@@ -1,56 +1,48 @@
---- Test: Admin access Raw PII ---
-Path: /api/patients/raw | Role: alice
-Status: 200 (Expected: 200)
-Data Sample (First 1 Record): {
-  "patient_id": "bdd640fb-0667-4ad1-9c80-317fa3b1799d",
-  "ho_ten": "Quang Phạm",
-  "cccd": 95304702823,
-  "ngay_sinh": "08/05/1954",
-  "so_dien_thoai": 700539322,
-  "email": "maijohn@example.net",
-  "dia_chi": "338 John Số\nThị xã JaneThành phố, 895667",
-  "benh": "Tim mạch",
-  "ket_qua_xet_nghiem": 11.35,
-  "bac_si_phu_trach": "Quý cô Thành Vũ",
-  "ngay_kham": "31/01/2026"
-}
-------------------------------
---- Test: ML Engineer access Raw PII ---
-Path: /api/patients/raw | Role: bob
-Status: 403 (Expected: 403)
-------------------------------
---- Test: ML Engineer access Anonymized Data ---
-Path: /api/patients/anonymized | Role: bob
-Status: 200 (Expected: 200)
-Data Sample (First 1 Record): {
-  "patient_id": "bdd640fb-0667-4ad1-9c80-317fa3b1799d",
-  "ho_ten": "Quang Phạm",
-  "cccd": "094908935633",
-  "ngay_sinh": "08/05/1954",
-  "so_dien_thoai": "0372945178",
-  "email": "pmai@example.net",
-  "dia_chi": "338 John Số\nThị xã JaneThành phố, 895667",
-  "benh": "Tim mạch",
-  "ket_qua_xet_nghiem": 11.35,
-  "bac_si_phu_trach": "Quý cô Thành Vũ",
-  "ngay_kham": "31/01/2026"
-}
-------------------------------
---- Test: Data Analyst access Aggregated Metrics ---
-Path: /api/metrics/aggregated | Role: carol
-Status: 200 (Expected: 200)
-Response: {
-  "total_patients": 200,
-  "disease_distribution": {
-    "Huyết áp cao": 54,
-    "Khỏe mạnh": 47,
-    "Tim mạch": 46,
-    "Tiểu đường": 53
-  },
-  "avg_test_result": 7.64
-}
-------------------------------
+============================= test session starts =============================
+platform win32 -- Python 3.12.0, pytest-8.2.0, pluggy-1.6.0 -- C:\Users\Admin\anaconda3\envs\intern\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\Admin\Programming_Project\internship\track2\day24\medviet-governance
+plugins: anyio-4.13.0, Faker-40.15.0, hydra-core-1.3.2, langsmith-0.7.26, locust-2.43.4, typeguard-4.5.1
+collecting ... collected 0 items / 1 error
 
-Checking Metrics Exposure...
-Prometheus Metrics Status: 200
-Prometheus Metrics found in output.
+=================================== ERRORS ====================================
+_____________________ ERROR collecting tests/test_pii.py ______________________
+tests\test_pii.py:4: in <module>
+    from src.pii.anonymizer import MedVietAnonymizer
+src\pii\anonymizer.py:3: in <module>
+    from presidio_anonymizer import AnonymizerEngine
+C:\Users\Admin\anaconda3\envs\intern\Lib\site-packages\presidio_anonymizer\__init__.py:5: in <module>
+    from .anonymizer_engine import AnonymizerEngine
+C:\Users\Admin\anaconda3\envs\intern\Lib\site-packages\presidio_anonymizer\anonymizer_engine.py:7: in <module>
+    from presidio_anonymizer.core import EngineBase
+C:\Users\Admin\anaconda3\envs\intern\Lib\site-packages\presidio_anonymizer\core\__init__.py:3: in <module>
+    from .engine_base import EngineBase
+C:\Users\Admin\anaconda3\envs\intern\Lib\site-packages\presidio_anonymizer\core\engine_base.py:14: in <module>
+    from presidio_anonymizer.operators import OperatorsFactory, OperatorType
+C:\Users\Admin\anaconda3\envs\intern\Lib\site-packages\presidio_anonymizer\operators\__init__.py:17: in <module>
+    from .ahds_surrogate import AHDSSurrogate
+C:\Users\Admin\anaconda3\envs\intern\Lib\site-packages\presidio_anonymizer\operators\ahds_surrogate.py:31: in <module>
+    from presidio_analyzer.llm_utils.azure_auth_helper import (
+C:\Users\Admin\anaconda3\envs\intern\Lib\site-packages\presidio_analyzer\__init__.py:15: in <module>
+    from presidio_analyzer.recognizer_registry import RecognizerRegistry
+C:\Users\Admin\anaconda3\envs\intern\Lib\site-packages\presidio_analyzer\recognizer_registry\__init__.py:3: in <module>
+    from .recognizer_registry import RecognizerRegistry
+C:\Users\Admin\anaconda3\envs\intern\Lib\site-packages\presidio_analyzer\recognizer_registry\recognizer_registry.py:10: in <module>
+    from presidio_analyzer.nlp_engine import (
+C:\Users\Admin\anaconda3\envs\intern\Lib\site-packages\presidio_analyzer\nlp_engine\__init__.py:3: in <module>
+    from .device_detector import device_detector
+C:\Users\Admin\anaconda3\envs\intern\Lib\site-packages\presidio_analyzer\nlp_engine\device_detector.py:90: in __getattr__
+    _detector_instance = _detector_instance or DeviceDetector()
+C:\Users\Admin\anaconda3\envs\intern\Lib\site-packages\presidio_analyzer\nlp_engine\device_detector.py:39: in __init__
+    self._device = self._get_device_from_env() or self._detect()
+C:\Users\Admin\anaconda3\envs\intern\Lib\site-packages\presidio_analyzer\nlp_engine\device_detector.py:62: in _detect
+    import torch
+C:\Users\Admin\anaconda3\envs\intern\Lib\site-packages\torch\__init__.py:285: in <module>
+    _load_dll_libraries()
+C:\Users\Admin\anaconda3\envs\intern\Lib\site-packages\torch\__init__.py:268: in _load_dll_libraries
+    raise err
+E   OSError: [WinError 1114] A dynamic link library (DLL) initialization routine failed. Error loading "C:\Users\Admin\anaconda3\envs\intern\Lib\site-packages\torch\lib\c10.dll" or one of its dependencies.
+=========================== short test summary info ===========================
+ERROR tests/test_pii.py - OSError: [WinError 1114] A dynamic link library (DL...
+!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+============================== 1 error in 7.74s ===============================

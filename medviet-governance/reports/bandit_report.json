@@ -1,17 +1,17 @@
 {
   "errors": [],
-  "generated_at": "2026-05-12T05:37:31Z",
+  "generated_at": "2026-05-12T05:42:17Z",
   "metrics": {
     "_totals": {
-      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.HIGH": 4,
       "CONFIDENCE.LOW": 0,
       "CONFIDENCE.MEDIUM": 0,
       "CONFIDENCE.UNDEFINED": 0,
       "SEVERITY.HIGH": 0,
-      "SEVERITY.LOW": 0,
+      "SEVERITY.LOW": 4,
       "SEVERITY.MEDIUM": 0,
       "SEVERITY.UNDEFINED": 0,
-      "loc": 426,
+      "loc": 420,
       "nosec": 0,
       "skipped_tests": 0
     },
@@ -120,15 +120,15 @@
       "skipped_tests": 0
     },
     "src/pii\\anonymizer.py": {
-      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.HIGH": 4,
       "CONFIDENCE.LOW": 0,
       "CONFIDENCE.MEDIUM": 0,
       "CONFIDENCE.UNDEFINED": 0,
       "SEVERITY.HIGH": 0,
-      "SEVERITY.LOW": 0,
+      "SEVERITY.LOW": 4,
       "SEVERITY.MEDIUM": 0,
       "SEVERITY.UNDEFINED": 0,
-      "loc": 84,
+      "loc": 78,
       "nosec": 0,
       "skipped_tests": 0
     },
@@ -172,5 +172,86 @@
       "skipped_tests": 0
     }
   },
-  "results": []
+  "results": [
+    {
+      "code": "34                 \"EMAIL_ADDRESS\": OperatorConfig(\"replace\", {\"new_value\": fake.email()}),\n35                 \"VN_CCCD\": OperatorConfig(\"replace\", {\"new_value\": \"0\" + \"\".join([str(random.randint(0,9)) for _ in range(11)])}),\n36                 \"VN_PHONE\": OperatorConfig(\"replace\", {\"new_value\": \"03\" + \"\".join([str(random.randint(0,9)) for _ in range(8)])}),\n",
+      "col_offset": 86,
+      "end_col_offset": 105,
+      "filename": "src/pii\\anonymizer.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 330,
+        "link": "https://cwe.mitre.org/data/definitions/330.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
+      "line_number": 35,
+      "line_range": [
+        35
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.4/blacklists/blacklist_calls.html#b311-random",
+      "test_id": "B311",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "35                 \"VN_CCCD\": OperatorConfig(\"replace\", {\"new_value\": \"0\" + \"\".join([str(random.randint(0,9)) for _ in range(11)])}),\n36                 \"VN_PHONE\": OperatorConfig(\"replace\", {\"new_value\": \"03\" + \"\".join([str(random.randint(0,9)) for _ in range(8)])}),\n37             }\n",
+      "col_offset": 88,
+      "end_col_offset": 107,
+      "filename": "src/pii\\anonymizer.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 330,
+        "link": "https://cwe.mitre.org/data/definitions/330.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
+      "line_number": 36,
+      "line_range": [
+        36
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.4/blacklists/blacklist_calls.html#b311-random",
+      "test_id": "B311",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "68         df_anon['email'] = df_anon['email'].apply(lambda _: fake.email())\n69         df_anon['cccd'] = df_anon['cccd'].apply(lambda _: \"0\" + \"\".join([str(random.randint(0,9)) for _ in range(11)]))\n70         df_anon['so_dien_thoai'] = df_anon['so_dien_thoai'].apply(lambda _: \"03\" + \"\".join([str(random.randint(0,9)) for _ in range(8)]))\n",
+      "col_offset": 77,
+      "end_col_offset": 96,
+      "filename": "src/pii\\anonymizer.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 330,
+        "link": "https://cwe.mitre.org/data/definitions/330.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
+      "line_number": 69,
+      "line_range": [
+        69
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.4/blacklists/blacklist_calls.html#b311-random",
+      "test_id": "B311",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "69         df_anon['cccd'] = df_anon['cccd'].apply(lambda _: \"0\" + \"\".join([str(random.randint(0,9)) for _ in range(11)]))\n70         df_anon['so_dien_thoai'] = df_anon['so_dien_thoai'].apply(lambda _: \"03\" + \"\".join([str(random.randint(0,9)) for _ in range(8)]))\n71 \n",
+      "col_offset": 96,
+      "end_col_offset": 115,
+      "filename": "src/pii\\anonymizer.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 330,
+        "link": "https://cwe.mitre.org/data/definitions/330.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
+      "line_number": 70,
+      "line_range": [
+        70
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.4/blacklists/blacklist_calls.html#b311-random",
+      "test_id": "B311",
+      "test_name": "blacklist"
+    }
+  ]
 }

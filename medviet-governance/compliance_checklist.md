@@ -24,9 +24,12 @@
 |-----------------|-------------------|--------|-------|
 | Data minimization | PII anonymization pipeline (Presidio) | ✅ Done | AI Team |
 | Access control | RBAC (Casbin) + ABAC (OPA) | ✅ Done | Platform Team |
-| Encryption | AES-256 at rest, TLS 1.3 in transit | 🚧 In Progress | Infra Team |
-| Audit logging | CloudTrail + API access logs | ⬜ Todo | Platform Team |
-| Breach detection | Anomaly monitoring (Prometheus) | ⬜ Todo | Security Team |
+| Encryption | Envelope Encryption (AES-256-GCM) | ✅ Done | Infra Team |
+| Audit logging | FastAPI Middleware + CSV Audit Trail | ✅ Done | Platform Team |
+| Breach detection | Prometheus + Grafana Anomaly Alerts | ✅ Done | Security Team |
 
-## F. TODO: Điền vào phần còn thiếu
-Với mỗi row còn "⬜ Todo", mô tả technical solution cụ thể bạn sẽ implement.
+## F. Technical Solutions Implemented
+- **Audit Logging**: Implemented a custom FastAPI middleware that logs every request's metadata (user, path, status, timestamp) to `data/audit_logs.csv`. This provides a permanent trail for compliance audits.
+- **Breach Detection**: Instrumented the API with `prometheus-fastapi-instrumentator`. Security events like unauthorized access (403 errors) are tracked, allowing Prometheus to trigger alerts when anomaly thresholds are met.
+- **Encryption**: Built a `SimpleVault` using the Envelope Encryption pattern. Data Keys (DEK) are protected by a Master Key (KEK), and data is encrypted using AES-256-GCM at rest.
+- **Data Minimization**: Integrated Microsoft Presidio with a custom Vietnamese `vi_core_news_lg` model to ensure all PII is anonymized before being used for AI training.

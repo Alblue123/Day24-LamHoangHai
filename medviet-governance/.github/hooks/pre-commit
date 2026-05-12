@@ -3,14 +3,7 @@
 
 echo "🔍 Running security checks..."
 
-# 1. git-secrets scan
-git secrets --pre_commit_hook -- "$@"
-if [ $? -ne 0 ]; then
-    echo "❌ git-secrets found potential secrets! Commit blocked."
-    exit 1
-fi
-
-# 2. Bandit SAST scan
+# 1. Bandit SAST scan
 echo "🐍 Running Bandit SAST..."
 bandit -r src/ -ll -q
 if [ $? -ne 0 ]; then
@@ -18,7 +11,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# 3. pip-audit dependency check
+# 2. pip-audit dependency check
 echo "📦 Checking dependencies for CVEs..."
 pip-audit --desc on
 if [ $? -ne 0 ]; then

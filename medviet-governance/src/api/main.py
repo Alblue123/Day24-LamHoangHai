@@ -2,11 +2,42 @@
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.responses import JSONResponse
 import pandas as pd
-from src.access.rbac import get_current_user, require_permission
+from src.access.rbac import get_current_user, require_permission, MOCK_USERS
 from src.pii.anonymizer import MedVietAnonymizer
+from prometheus_fastapi_instrumentator import Instrumentator
+import datetime
+import os
 
 app = FastAPI(title="MedViet Data API", version="1.0.0")
 anonymizer = MedVietAnonymizer()
+
+# --- AUDIT LOGGING MIDDLEWARE ---
+@app.middleware("http")
+async def audit_logging_middleware(request, call_next):
+    user = "anonymous"
+    auth = request.headers.get("Authorization")
+    if auth and auth.startswith("Bearer "):
+        token = auth.split(" ")[1]
+        user_info = MOCK_USERS.get(token)
+        if user_info:
+            user = user_info["username"]
+
+    response = await call_next(request)
+    
+    # Log to file for NĐ13 compliance
+    log_file = "data/audit_logs.csv"
+    if not os.path.exists(log_file):
+        with open(log_file, "w") as f:
+            f.write("timestamp,user,method,path,status\n")
+            
+    log_entry = f"{datetime.datetime.now().isoformat()},{user},{request.method},{request.url.path},{response.status_code}\n"
+    with open(log_file, "a") as f:
+        f.write(log_entry)
+    
+    return response
+
+# --- PROMETHEUS INSTRUMENTATION ---
+Instrumentator().instrument(app).expose(app)
 
 # --- ENDPOINT 1 ---
 @app.get("/api/patients/raw")
@@ -15,11 +46,15 @@ async def get_raw_patients(
     current_user: dict = Depends(get_current_user)
 ):
     """
-    TODO: Trả về raw patient data (chỉ admin được phép).
+    Trả về raw patient data (chỉ admin được phép).
     Load từ data/raw/patients_raw.csv
     Trả về 10 records đầu tiên dưới dạng JSON.
     """
-    pass
+    try:
+        df = pd.read_csv("data/raw/patients_raw.csv")
+        return df.head(10).to_dict(orient="records")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 # --- ENDPOINT 2 ---
 @app.get("/api/patients/anonymized")
@@ -28,10 +63,15 @@ async def get_anonymized_patients(
     current_user: dict = Depends(get_current_user)
 ):
     """
-    TODO: Trả về anonymized data (ml_engineer và admin được phép).
+    Trả về anonymized data (ml_engineer và admin được phép).
     Load raw data → anonymize → trả về JSON.
     """
-    pass
+    try:
+        df = pd.read_csv("data/raw/patients_raw.csv")
+        df_anon = anonymizer.anonymize_dataframe(df)
+        return df_anon.to_dict(orient="records")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 # --- ENDPOINT 3 ---
 @app.get("/api/metrics/aggregated")
@@ -40,10 +80,19 @@ async def get_aggregated_metrics(
     current_user: dict = Depends(get_current_user)
 ):
     """
-    TODO: Trả về aggregated metrics (data_analyst, ml_engineer, admin).
+    Trả về aggregated metrics (data_analyst, ml_engineer, admin).
     Ví dụ: số bệnh nhân theo từng loại bệnh (không có PII).
     """
-    pass
+    try:
+        df = pd.read_csv("data/raw/patients_raw.csv")
+        metrics = df.groupby("benh").size().to_dict()
+        return {
+            "total_patients": len(df),
+            "disease_distribution": metrics,
+            "avg_test_result": round(df["ket_qua_xet_nghiem"].mean(), 2)
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 # --- ENDPOINT 4 ---
 @app.delete("/api/patients/{patient_id}")
@@ -53,9 +102,9 @@ async def delete_patient(
     current_user: dict = Depends(get_current_user)
 ):
     """
-    TODO: Chỉ admin được xóa. Các role khác nhận 403.
+    Chỉ admin được xóa. Các role khác nhận 403.
     """
-    pass
+    return {"message": f"Patient {patient_id} deleted successfully (Simulation)"}
 
 @app.get("/health")
 async def health():

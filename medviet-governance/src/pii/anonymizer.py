@@ -27,26 +27,22 @@ class MedVietAnonymizer:
         if not results:
             return text
 
-        # TODO: implement operators dict dựa trên strategy
-        operators = {}
-
+        import random
         if strategy == "replace":
             operators = {
-                "PERSON": OperatorConfig("replace", 
-                          {"new_value": fake.name()}),
-                "EMAIL_ADDRESS": OperatorConfig("replace", 
-                                 {"new_value": ___}),   # TODO: fake email
-                "VN_CCCD": OperatorConfig("replace", 
-                           {"new_value": ___}),          # TODO: fake CCCD
-                "VN_PHONE": OperatorConfig("replace", 
-                            {"new_value": ___}),         # TODO: fake phone
+                "PERSON": OperatorConfig("replace", {"new_value": fake.name()}),
+                "EMAIL_ADDRESS": OperatorConfig("replace", {"new_value": fake.email()}),
+                "VN_CCCD": OperatorConfig("replace", {"new_value": "0" + "".join([str(random.randint(0,9)) for _ in range(11)])}),
+                "VN_PHONE": OperatorConfig("replace", {"new_value": "03" + "".join([str(random.randint(0,9)) for _ in range(8)])}),
             }
         elif strategy == "mask":
-            # TODO: implement masking
-            pass
+            operators = {
+                "DEFAULT": OperatorConfig("mask", {"chars_to_mask": 4, "masking_char": "*", "from_end": True})
+            }
         elif strategy == "hash":
-            # TODO: implement hashing dùng sha256
-            pass
+            operators = {
+                "DEFAULT": OperatorConfig("hash", {"hash_type": "sha256"})
+            }
 
         anonymized = self.anonymizer.anonymize(
             text=text,
@@ -57,16 +53,21 @@ class MedVietAnonymizer:
 
     def anonymize_dataframe(self, df: pd.DataFrame) -> pd.DataFrame:
         """
-        TODO: Anonymize toàn bộ DataFrame.
+        Anonymize toàn bộ DataFrame.
         - Cột text (ho_ten, dia_chi, email): dùng anonymize_text()
         - Cột cccd, so_dien_thoai: replace trực tiếp bằng fake data
         - Cột benh, ket_qua_xet_nghiem: GIỮ NGUYÊN (cần cho model training)
         - Cột patient_id: GIỮ NGUYÊN (pseudonym đã đủ an toàn)
         """
+        import random
         df_anon = df.copy()
 
-        # TODO: Xử lý từng cột PII
-        # Gợi ý: dùng df.apply() hoặc list comprehension
+        # Xử lý các cột PII
+        df_anon['ho_ten'] = df_anon['ho_ten'].apply(lambda x: self.anonymize_text(str(x), strategy="replace"))
+        df_anon['dia_chi'] = df_anon['dia_chi'].apply(lambda x: self.anonymize_text(str(x), strategy="mask"))
+        df_anon['email'] = df_anon['email'].apply(lambda _: fake.email())
+        df_anon['cccd'] = df_anon['cccd'].apply(lambda _: "0" + "".join([str(random.randint(0,9)) for _ in range(11)]))
+        df_anon['so_dien_thoai'] = df_anon['so_dien_thoai'].apply(lambda _: "03" + "".join([str(random.randint(0,9)) for _ in range(8)]))
 
         return df_anon
 

@@ -27,13 +27,14 @@ class MedVietAnonymizer:
         if not results:
             return text
 
-        import random
+        import secrets
+        import string
         if strategy == "replace":
             operators = {
                 "PERSON": OperatorConfig("replace", {"new_value": fake.name()}),
                 "EMAIL_ADDRESS": OperatorConfig("replace", {"new_value": fake.email()}),
-                "VN_CCCD": OperatorConfig("replace", {"new_value": "0" + "".join([str(random.randint(0,9)) for _ in range(11)])}),
-                "VN_PHONE": OperatorConfig("replace", {"new_value": "03" + "".join([str(random.randint(0,9)) for _ in range(8)])}),
+                "VN_CCCD": OperatorConfig("replace", {"new_value": "0" + "".join([secrets.choice(string.digits) for _ in range(11)])}),
+                "VN_PHONE": OperatorConfig("replace", {"new_value": "03" + "".join([secrets.choice(string.digits) for _ in range(8)])}),
             }
         elif strategy == "mask":
             operators = {
@@ -59,15 +60,24 @@ class MedVietAnonymizer:
         - Cột benh, ket_qua_xet_nghiem: GIỮ NGUYÊN (cần cho model training)
         - Cột patient_id: GIỮ NGUYÊN (pseudonym đã đủ an toàn)
         """
-        import random
+        import secrets
+        import string
         df_anon = df.copy()
 
         # Xử lý các cột PII
         df_anon['ho_ten'] = df_anon['ho_ten'].apply(lambda x: self.anonymize_text(str(x), strategy="replace"))
         df_anon['dia_chi'] = df_anon['dia_chi'].apply(lambda x: self.anonymize_text(str(x), strategy="mask"))
         df_anon['email'] = df_anon['email'].apply(lambda _: fake.email())
-        df_anon['cccd'] = df_anon['cccd'].apply(lambda _: "0" + "".join([str(random.randint(0,9)) for _ in range(11)]))
-        df_anon['so_dien_thoai'] = df_anon['so_dien_thoai'].apply(lambda _: "03" + "".join([str(random.randint(0,9)) for _ in range(8)]))
+        
+        # Dùng secrets thay cho random để đảm bảo bảo mật
+        def gen_cccd():
+            return "0" + "".join([secrets.choice(string.digits) for _ in range(11)])
+        
+        def gen_phone():
+            return "03" + "".join([secrets.choice(string.digits) for _ in range(8)])
+
+        df_anon['cccd'] = df_anon['cccd'].apply(lambda _: gen_cccd())
+        df_anon['so_dien_thoai'] = df_anon['so_dien_thoai'].apply(lambda _: gen_phone())
 
         return df_anon
 

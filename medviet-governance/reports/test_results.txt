@@ -1,0 +1,56 @@
+﻿--- Test: Admin access Raw PII ---
+Path: /api/patients/raw | Role: alice
+Status: 200 (Expected: 200)
+Data Sample (First 1 Record): {
+  "patient_id": "bdd640fb-0667-4ad1-9c80-317fa3b1799d",
+  "ho_ten": "Quang Phß║ím",
+  "cccd": 95304702823,
+  "ngay_sinh": "08/05/1954",
+  "so_dien_thoai": 700539322,
+  "email": "maijohn@example.net",
+  "dia_chi": "338 John Sß╗æ\nThß╗ï x├ú JaneTh├ánh phß╗æ, 895667",
+  "benh": "Tim mß║ích",
+  "ket_qua_xet_nghiem": 11.35,
+  "bac_si_phu_trach": "Qu├╜ c├┤ Th├ánh V┼⌐",
+  "ngay_kham": "31/01/2026"
+}
+------------------------------
+--- Test: ML Engineer access Raw PII ---
+Path: /api/patients/raw | Role: bob
+Status: 403 (Expected: 403)
+------------------------------
+--- Test: ML Engineer access Anonymized Data ---
+Path: /api/patients/anonymized | Role: bob
+Status: 200 (Expected: 200)
+Data Sample (First 1 Record): {
+  "patient_id": "bdd640fb-0667-4ad1-9c80-317fa3b1799d",
+  "ho_ten": "Quang Phß║ím",
+  "cccd": "048251705551",
+  "ngay_sinh": "08/05/1954",
+  "so_dien_thoai": "0332704811",
+  "email": "janedang@example.com",
+  "dia_chi": "338 John Sß╗æ\nThß╗ï x├ú JaneTh├ánh phß╗æ, 895667",
+  "benh": "Tim mß║ích",
+  "ket_qua_xet_nghiem": 11.35,
+  "bac_si_phu_trach": "Qu├╜ c├┤ Th├ánh V┼⌐",
+  "ngay_kham": "31/01/2026"
+}
+------------------------------
+--- Test: Data Analyst access Aggregated Metrics ---
+Path: /api/metrics/aggregated | Role: carol
+Status: 200 (Expected: 200)
+Response: {
+  "total_patients": 200,
+  "disease_distribution": {
+    "Huyß║┐t ├íp cao": 54,
+    "Khß╗Åe mß║ính": 47,
+    "Tim mß║ích": 46,
+    "Tiß╗âu ─æ╞░ß╗¥ng": 53
+  },
+  "avg_test_result": 7.64
+}
+------------------------------
+
+Checking Metrics Exposure...
+Prometheus Metrics Status: 200
+Prometheus Metrics found in output.
